@@ -1,4 +1,5 @@
-from .mobilenet import mobilenet_v2
+# from .mobilenet import mobilenet_v2
+from .mobilenetV2R02 import mobilenet_v2
 from .resnet50 import resnet50
 from .vgg16 import vgg16
 from .vit import vit

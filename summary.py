@@ -3,9 +3,8 @@
 #--------------------------------------------#
 from torchsummary import summary
 
-from nets.mobilenet import mobilenet_v2
+# from nets.mobilenet import mobilenet_v2
 from nets.mobilenetV2R02 import mobilenet_v2
-
 from nets.resnet50 import resnet50
 from nets.vgg16 import vgg16
 from nets.vit import vit
