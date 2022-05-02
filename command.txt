@@ -8,6 +8,8 @@ pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 unzip -n datasets.zip -d ./datasets/
 # 压缩文件夹当中的所有文件
 zip -r myZip.zip ./logs/
+#在vscode当中查看训练图标tensorboard
+tensorboard --logdir logs/loss_2022_05_02_10_36_11
 
 nvidia-smi #GPU列表信息
 nvcc -V 
