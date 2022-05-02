@@ -4,5 +4,10 @@ conda activate logocls
 pip3 install torch==1.10.2+cu113 torchvision==0.11.3+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html 
 pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 
+# 解压文件到指定目录
+unzip -n datasets.zip -d ./datasets/
+# 压缩文件夹当中的所有文件
+zip -r myZip.zip ./logs/
+
 nvidia-smi #GPU列表信息
 nvcc -V 
