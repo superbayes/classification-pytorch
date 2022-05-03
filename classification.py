@@ -123,3 +123,32 @@ class Classification(object):
         plt.title('Class:%s Probability:%.3f' %(class_name, probability))
         plt.show()
         return class_name
+        #---------------------------------------------------#
+        #   绘图并写字
+        #---------------------------------------------------#
+        plt.subplot(1, 1, 1)
+        plt.imshow(np.array(image))
+        plt.title('Class:%s Probability:%.3f' %(class_name, probability))
+        plt.show()
+        return class_name
+
+    #---------------------------------------------------#
+    #   将模型导出为onnx
+    #---------------------------------------------------#
+    def export_to_onnx(self, onnxPath:str = "torch_model.onnx"):
+        self.model.eval()# 测试，看是否报错
+        #下面开始转模型，cpu格式下
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        dummy_input = torch.randn(1, 3, 224, 224,device=device)
+        input_names = ["input"]
+        output_names = ["output"]
+        # , output_names=["hm"]
+        torch.onnx.export(self.model.module, dummy_input, onnxPath, opset_version=9, verbose=False)
+        print("export onnx to %s"%onnxPath)
+
+if __name__ == "__main__":
+    logocls = Classification()
+    logocls.export_to_onnx("./model_data/logocls8_mobileNetv2_alpha050_train940_val981_0502.onnx")
+    pass
+      
+      
