@@ -136,14 +136,18 @@ class Classification(object):
     #   将模型导出为onnx
     #---------------------------------------------------#
     def export_to_onnx(self, onnxPath:str = "torch_model.onnx"):
-        self.model.eval()# 测试，看是否报错
-        #下面开始转模型，cpu格式下
+        self.model.eval()# 开启推理模式,禁用反向更新参数
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         dummy_input = torch.randn(1, 3, 224, 224,device=device)
-        input_names = ["input"]
-        output_names = ["output"]
-        # , output_names=["hm"]
-        torch.onnx.export(self.model.module, dummy_input, onnxPath, opset_version=9, verbose=False)
+        torch.onnx.export(self.model.module, 
+        dummy_input, 
+        onnxPath, 
+        opset_version=10, 
+        verbose=False,
+        input_names = ["input"],
+        output_names = ["output"],
+        export_params=True #保存已训练好的参数   
+        )
         print("export onnx to %s"%onnxPath)
 
 if __name__ == "__main__":
