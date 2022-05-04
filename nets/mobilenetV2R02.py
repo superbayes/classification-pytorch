@@ -153,14 +153,8 @@ def mobilenet_v2(pretrained=False, progress=True, num_classes=1000,alpha = 0.25)
     return model
 
 if __name__ =="__main__":
-    model = mobilenet_v2(alpha = 0.25)
-    input = torch.randn(1, 3, 224, 224)
-    y = model(input)
-    # print(model)
-    summary.summary(model,(3, 224, 224))
-    # print('=======输出尺寸=====:',y.size())
-    # madds, params = profile(model, inputs=(input, ))
-    # print('===============ConvNet #madds:{}, #params:{}'.format(madds, params))
+    model = mobilenet_v2(alpha = 0.25).train().cuda()
+    summary(model,(3, 224, 224))
 
     # 可视化模型
     # g = make_dot(model(input),params=dict(model.named_parameters()))
