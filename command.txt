@@ -5,7 +5,9 @@ pip3 install torch==1.10.2+cu113 torchvision==0.11.3+cu113 -f https://download.p
 pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 #onnx-->param,bin
-onnx2ncnn demo.onnx demo-opt.param demo-opt.bin
+onnx2ncnn demo.onnx demo.param demo.bin
+#ncnn model 优化 注意,最后0指的的是fp32，1指的是fp16
+ncnnoptimize demo.param demot.bin demo_sim_fp16.param demo_sim_fp16.bin 1
 
 # 解压文件到指定目录
 unzip -n datasets.zip -d ./datasets/
