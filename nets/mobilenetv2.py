@@ -54,7 +54,7 @@ class InvertedResidual(nn.Module):
 
 
 class MobileNetV2(nn.Module):
-    def __init__(self, num_classes=1000, width_mult=1.0, inverted_residual_setting=None, round_nearest=8):
+    def __init__(self, num_classes=1000, width_mult=1.0, inverted_residual_setting=None, round_nearest=8,alpha=1.0):
         super(MobileNetV2, self).__init__()
         block = InvertedResidual
         input_channel = 32
@@ -64,19 +64,19 @@ class MobileNetV2(nn.Module):
             inverted_residual_setting = [
                 # t, c, n, s
                 # 112, 112, 32 -> 112, 112, 16
-                [1, 16, 1, 1],
+                [1, int(16*alpha), 1, 1],
                 # 112, 112, 16 -> 56, 56, 24
-                [6, 24, 2, 2],
+                [6, int(24*alpha), 2, 2],
                 # 56, 56, 24 -> 28, 28, 32
-                [6, 32, 3, 2],
+                [6, int(32*alpha), 3, 2],
                 # 28, 28, 32 -> 14, 14, 64
-                [6, 64, 4, 2],
+                [6, int(64*alpha), 4, 2],
                 # 14, 14, 64 -> 14, 14, 96
-                [6, 96, 3, 1],
+                [6, int(96*alpha), 3, 1],
                 # 14, 14, 96 -> 7, 7, 160
-                [6, 160, 3, 2],
+                [6, int(160*alpha), 3, 2],
                 # 7, 7, 160 -> 7, 7, 320
-                [6, 320, 1, 1],
+                [6, int(320*alpha), 1, 1],
             ]
 
         if len(inverted_residual_setting) == 0 or len(inverted_residual_setting[0]) != 4:
@@ -84,6 +84,7 @@ class MobileNetV2(nn.Module):
                              "or a 4-element list, got {}".format(inverted_residual_setting))
 
         input_channel = _make_divisible(input_channel * width_mult, round_nearest)
+        input_channel= int(alpha*input_channel)
         self.last_channel = _make_divisible(last_channel * max(1.0, width_mult), round_nearest)
 
         # 224, 224, 3 -> 112, 112, 32
@@ -97,12 +98,12 @@ class MobileNetV2(nn.Module):
                 input_channel = output_channel
 
         # 7, 7, 320 -> 7,7,1280
-        features.append(ConvBNReLU(input_channel, self.last_channel, kernel_size=1))
+        features.append(ConvBNReLU(input_channel, int(self.last_channel*alpha), kernel_size=1))
         self.features = nn.Sequential(*features)
 
         self.classifier = nn.Sequential(
             nn.Dropout(0.2),
-            nn.Linear(self.last_channel, num_classes),
+            nn.Linear(int(self.last_channel*alpha), num_classes),
         )
 
         for m in self.modules():
@@ -133,8 +134,8 @@ class MobileNetV2(nn.Module):
             param.requires_grad = True
 
 
-def mobilenetv2(pretrained=False, progress=True, num_classes=1000):
-    model = MobileNetV2()
+def mobilenetv2(pretrained=False, progress=True, num_classes=1000,alpha=1.0):
+    model = MobileNetV2(alpha=alpha)
     if pretrained:
         state_dict = load_state_dict_from_url(model_urls['mobilenetv2'], model_dir='./model_data',
                                             progress=progress)
@@ -146,3 +147,11 @@ def mobilenetv2(pretrained=False, progress=True, num_classes=1000):
                 nn.Linear(model.last_channel, num_classes),
             )
     return model
+
+if __name__=='__main__':
+    import torch
+    from torchsummary import summary
+    classfication = mobilenetv2()
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    t = classfication.to(device)
+    summary(t, (3, 224, 224))
