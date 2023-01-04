@@ -86,7 +86,7 @@ class MobileNetV2(nn.Module):
         input_channel = _make_divisible(input_channel * width_mult, round_nearest)
         input_channel= int(alpha*input_channel)
         self.last_channel = _make_divisible(last_channel * max(1.0, width_mult), round_nearest)
-
+        self.last_channel = int(self.last_channel*alpha)
         # 224, 224, 3 -> 112, 112, 32
         features = [ConvBNReLU(3, input_channel, stride=2)]
 
@@ -98,12 +98,12 @@ class MobileNetV2(nn.Module):
                 input_channel = output_channel
 
         # 7, 7, 320 -> 7,7,1280
-        features.append(ConvBNReLU(input_channel, int(self.last_channel*alpha), kernel_size=1))
+        features.append(ConvBNReLU(input_channel, self.last_channel, kernel_size=1))
         self.features = nn.Sequential(*features)
 
         self.classifier = nn.Sequential(
             nn.Dropout(0.2),
-            nn.Linear(int(self.last_channel*alpha), num_classes),
+            nn.Linear(self.last_channel, num_classes),
         )
 
         for m in self.modules():
