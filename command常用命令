@@ -1,2 +1,12 @@
 git clone https://ghproxy.com/https://github.com/superbayes/classification-pytorch.git
 git checkout mycopy20230103
+
+pip install setuptools==59.5.0
+pip install torchsummary
+#简化onnx
+onnxsim input_onnx_model.onnx output_onnx_model.onnx
+
+#解压zip
+unzip dataset.zip -d ./
+#压缩
+zip -q -r log.zip logs/loss_2023_01_04_22_36_48/*
